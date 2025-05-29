@@ -40,9 +40,9 @@ When you want to enable public user login or provide agents for others, here are
 
 ###  Setup Phase
 
-* [ ] Configure Firebase project & Cloud Firestore
-* [ ] Set up Firebase Hosting for Vue frontend
-* [ ] Configure Cloud Functions (Python 3.10+) via `gcloud` CLI
+* [x] Configure Firebase project & Cloud Firestore
+* [x] Set up Firebase Hosting for Vue frontend
+* [x] Configure Cloud Functions (Python 3.10+) via `gcloud` CLI
 * [ ] Store OpenAI API Key in Google Cloud Secrets Manager
 
 ### Backend (Agent Logic)
@@ -67,6 +67,19 @@ When you want to enable public user login or provide agents for others, here are
 * [ ] Define "admin" role in Firestore or via claims
 * [ ] Login component & protected routes
 * [ ] Deployment via Firebase Hosting (CI optional)
+
+## Current Setup
+
+### Firebase Configuration
+- Project initialized with Firestore, Storage, Functions, and Hosting
+- Admin-only Firestore security rules implemented
+- Local emulators configured for development
+- Emulator ports:
+  - UI: localhost:4000
+  - Functions: localhost:5001
+  - Firestore: localhost:8080
+  - Hosting: localhost:5000
+  - Storage: localhost:9199
 
 ## Open Questions
 

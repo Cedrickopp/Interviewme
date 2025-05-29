@@ -6,7 +6,7 @@ A personal interview agent that serves as a digital twin, representing my skills
 
 * Web application allowing users to interview my AI avatar (based on my profile, projects, etc.)
 * GPT-based response generation through Python Cloud Functions
-* Admin-only access (initially), with future authentication system for external users
+* Simple, frictionless access for recruiters
 * Cost-effective, secure, modular & scalable architecture
 
 ## Tech Stack (Updated May 2025)
@@ -19,22 +19,33 @@ A personal interview agent that serves as a digital twin, representing my skills
 | Backend        | Firebase Cloud Functions (Python, Gen2)                                                           | ✅ planned   |
 | Database       | Cloud Firestore                                                                                   | ✅ planned   |
 | Hosting        | Firebase Hosting                                                                                  | ✅ planned   |
-| Auth (now)     | Firebase Auth – Admin-only                                                                        | ✅ planned   |
-| Auth (later)   | [Clerk](https://clerk.dev), [Auth0](https://auth0.com), [Supabase Auth](https://supabase.com/auth) | 🔲 open     |
+| Security       | Rate limiting & IP-based protection                                                               | ✅ planned   |
 | LLM API        | OpenAI (via Python SDK)                                                                           | ✅ planned   |
 | Secrets Mgmt   | Google Cloud Secrets Manager                                                                      | ✅ recommended |
 
-##  Authentication Proposal (Future)
+## Security Strategy
 
-When you want to enable public user login or provide agents for others, here are three **modern authentication systems** to choose from:
+To ensure a smooth experience for recruiters while protecting the system:
 
-| Option            | Advantages                                                           | Disadvantages                      |
-| ----------------- | -------------------------------------------------------------------- | ---------------------------------- |
-| **Clerk.dev**     | Super easy Vue integration, Google/Apple/Email, GDPR-compliant       | Monthly costs after limit         |
-| **Auth0**         | Widely used in enterprise, many providers                            | Slightly heavy for small projects  |
-| **Supabase Auth** | Open Source, Email Magic Link, OAuth ready                           | Less polished UI than Clerk/Auth0  |
+### For Recruiters
+- No login required
+- Direct access to the interview interface
+- Rate limiting per IP address (100 requests/hour)
+- Automatic blocking after limit exceeded
+- Simple re-authentication if needed
 
-**Recommendation:** For future scaling: **Clerk** – good mix of UX, pricing, and Vue compatibility.
+### For Admin (You)
+- Firebase Auth with Google Sign-in
+- Full access to system configuration
+- Monitoring of usage and costs
+- Ability to adjust rate limits
+
+### Protection Measures
+- IP-based rate limiting
+- Request timeout limits
+- Cost monitoring and alerts
+- DDoS protection through Firebase
+- Automatic blocking of suspicious activity
 
 ##  Roadmap (MVP v0.1)
 
@@ -58,14 +69,14 @@ When you want to enable public user login or provide agents for others, here are
 * [ ] Initialize Vue CLI project (`vite` or `vue-cli`)
 * [ ] Bootstrap integration (Vue-compatible via CDN or package)
 * [ ] Chat component with question form, loading indicator & response display
-* [ ] Auth guard for admin access
+* [ ] Rate limit indicator & user feedback
 * [ ] "About me" page (static CV, projects)
 
-### Auth & Hosting
+### Security & Hosting
 
-* [ ] Firebase Auth for admin with Google login
-* [ ] Define "admin" role in Firestore or via claims
-* [ ] Login component & protected routes
+* [ ] Implement IP-based rate limiting
+* [ ] Set up cost monitoring and alerts
+* [ ] Configure request timeout limits
 * [ ] Deployment via Firebase Hosting (CI optional)
 
 ## Current Setup
@@ -87,7 +98,7 @@ When you want to enable public user login or provide agents for others, here are
 * **Session Storage?** Store past questions/answers?
 * **Cost Management?** Budget or limit API usage (tokens)?
 * **Improve Agent Understanding?** Later use embeddings & vector database?
-* **Public Access?** Make agent accessible to recruiters without login or via invitation?
+* **Rate Limits?** What are the optimal limits for different types of users?
 
 ## Local Development
 

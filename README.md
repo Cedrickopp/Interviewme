@@ -54,7 +54,7 @@ To ensure a smooth experience for recruiters while protecting the system:
 * [x] Configure Firebase project & Cloud Firestore
 * [x] Set up Firebase Hosting for Vue frontend
 * [x] Configure Cloud Functions (Python 3.10+) via `gcloud` CLI
-* [ ] Store OpenAI API Key in Google Cloud Secrets Manager
+* [x] Store OpenAI API Key in Google Cloud Secrets Manager
 
 ### Backend (Agent Logic)
 

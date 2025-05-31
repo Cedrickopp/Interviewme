@@ -5,6 +5,10 @@
 from firebase_functions import https_fn
 from firebase_admin import initialize_app
 
+x = 10
+if x > 5:
+    print("Hello world!")
+
 # initialize_app()
 #
 #

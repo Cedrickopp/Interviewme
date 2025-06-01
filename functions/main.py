@@ -7,10 +7,9 @@ from firebase_admin import initialize_app
 from google.cloud import secretmanager
 import openai
 import json
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+
+
 initialize_app()
 
 def access_secret_version(project_id: str, secret_id: str, version_id: str = "latest") -> str:
@@ -23,8 +22,8 @@ def access_secret_version(project_id: str, secret_id: str, version_id: str = "la
 @https_fn.on_request()
 def test_openai_connection(req: https_fn.Request) -> https_fn.Response:
     try:
-        project_id = os.getenv("PROJECT_ID")
-        secret_id = os.getenv("SECRET_ID")
+        project_id = "interviewme-ad529"
+        secret_id = "openai-api-key"
         if not project_id or not secret_id:
             raise ValueError("PROJECT_ID and SECRET_ID must be set in environment variables or .env file.")
         
@@ -32,10 +31,8 @@ def test_openai_connection(req: https_fn.Request) -> https_fn.Response:
         api_key = access_secret_version(project_id, secret_id)
         
         # Configure OpenAI with the API key
-        openai.api_key = api_key
-        
-        # Make a simple test call to OpenAI
-        response = openai.ChatCompletion.create(
+        client = openai.OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": "Say 'Hello! This is a test message.'"}
@@ -52,6 +49,8 @@ def test_openai_connection(req: https_fn.Request) -> https_fn.Response:
         )
         
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return https_fn.Response(
             json.dumps({
                 "status": "error",
@@ -60,5 +59,3 @@ def test_openai_connection(req: https_fn.Request) -> https_fn.Response:
             status=500,
             headers={"Content-Type": "application/json"}
         )
-
-# Add your functions here

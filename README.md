@@ -16,12 +16,12 @@ A personal interview agent that serves as a digital twin, representing my skills
 | Frontend       | **Vue 3** (Composition API)                                                                       | ✅ chosen    |
 | Styling        | Bootstrap 5                                                                                       | ✅ chosen    |
 | Interactivity  | Vue with `fetch` for backend communication                                                         | ✅ planned   |
-| Backend        | Firebase Cloud Functions (Python, Gen2)                                                           | ✅ planned   |
+| Backend        | Firebase Cloud Functions (Python, Gen2)                                                           | ✅ chosen   |
 | Database       | Cloud Firestore                                                                                   | ✅ planned   |
 | Hosting        | Firebase Hosting                                                                                  | ✅ planned   |
 | Security       | Rate limiting & IP-based protection                                                               | ✅ planned   |
-| LLM API        | OpenAI (via Python SDK)                                                                           | ✅ planned   |
-| Secrets Mgmt   | Google Cloud Secrets Manager                                                                      | ✅ recommended |
+| LLM API        | OpenAI (via Python SDK)                                                                           | ✅ chosen  |
+| Secrets Mgmt   | Google Cloud Secrets Manager                                                                      | ✅ chosen  |
 
 ## Security Strategy
 
@@ -92,6 +92,80 @@ To ensure a smooth experience for recruiters while protecting the system:
   - Hosting: localhost:5000
   - Storage: localhost:9199
 
+## OpenAI API Key & Google Secret Manager Setup
+
+### 1. Create an OpenAI API Key
+- Go to [OpenAI API Keys](https://platform.openai.com/api-keys)
+- Click "Create new secret key" and copy the key (starts with `sk-...`)
+
+### 2. Store the Key in Google Secret Manager
+- Go to [Google Cloud Secret Manager](https://console.cloud.google.com/security/secret-manager)
+- Click "Create Secret"
+- Name: `openai-api-key` (or your preferred name)
+- Value: **Paste the API key as plain text (no quotes)**
+- Click "Create"
+
+### 3. Grant Access to Your Service Account
+- Go to [IAM & Admin > Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts)
+- Find your service account (e.g., `interviewme-ad529@appspot.gserviceaccount.com`)
+- Click on it, go to "Permissions" or "Edit"
+- Add the role: **Secret Manager Secret Accessor** (`roles/secretmanager.secretAccessor`)
+
+### 4. Download Service Account Key (for local dev)
+- In the Service Account page, go to "Keys" > "Add Key" > "Create new key" > JSON
+- Download the key file
+
+### 5. Set Environment Variable for Local Development
+- In your terminal, run:
+  ```powershell
+  $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Path\To\Your\service-account-key.json"
+  ```
+- Or set it permanently in your system environment variables
+
+### 6. Update Your Function Code
+- Hardcode the `project_id` and `secret_id` in your function (safe, not sensitive)
+- Do **not** hardcode the API key itself
+
+## Local Development with Firebase Emulator
+
+### 1. Activate the Python virtual environment in `functions/`:
+```powershell
+.\functions\venv\Scripts\Activate.ps1
+```
+
+### 2. Install dependencies:
+```powershell
+pip install -r functions/requirements.txt
+```
+
+### 3. Start the emulator (functions only):
+```powershell
+firebase emulators:start --only functions
+```
+
+### 4. Test your function
+- The emulator will show a local URL, e.g.:
+  `http://localhost:5001/<your-project-id>/us-central1/test_openai_connection`
+- Use your browser or `curl` to test:
+  ```sh
+  curl http://localhost:5001/<your-project-id>/us-central1/test_openai_connection
+  ```
+
+## Troubleshooting
+
+- **403 Permission Denied:**
+  - Make sure the service account has the `Secret Manager Secret Accessor` role
+  - Make sure the Secret Manager API is enabled
+- **Connection error / ECONNRESET:**
+  - Check your internet connection
+  - Check OpenAI status: https://status.openai.com/
+  - Try a different network (e.g., mobile hotspot)
+  - Make sure your API key is valid and active
+- **DefaultCredentialsError:**
+  - Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to your service account key
+- **API key not working:**
+  - Double-check the secret value in Secret Manager matches your working OpenAI key
+
 ## Open Questions
 
 * **Profile Structure**: JSON vs Markdown vs Firestore document – how to maintain content?
@@ -100,19 +174,6 @@ To ensure a smooth experience for recruiters while protecting the system:
 * **Improve Agent Understanding?** Later use embeddings & vector database?
 * **Rate Limits?** What are the optimal limits for different types of users?
 
-## Local Development
+---
 
-### Setup
-
-```bash
-# Firebase CLI
-npm install -g firebase-tools
-firebase login
-firebase init
-
-# Google Cloud SDK for Python Functions
-https://cloud.google.com/sdk/docs/install
-
-# Local Emulation
-firebase emulators:start
-```
+**For any issues, check the emulator logs and the troubleshooting section above.**
